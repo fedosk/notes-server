@@ -5,9 +5,15 @@ const app = express()
 const cors = require('cors')
 const PORT = process.env.PORT || 3000
 
-app.use(cors());
 
-app.post('/note/add', (req, res) => {
+var corsOptions = {
+    origin: 'https://notes-fedos.herokuapp.com',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
+app.use(express.json())
+
+app.post('/note/add', cors(corsOptions), (req, res) => {
 
     const existNotes = getNoteData()
     const noteData = req.body
