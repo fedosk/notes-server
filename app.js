@@ -10,10 +10,9 @@ app.post('/note/add', (req, res) => {
     const existNotes = getNoteData()
     const noteData = req.body
 
-    if (noteData.name == null || noteData.text == null || noteData.hash == null) {
+    if (noteData.name == null || noteData.text == null || noteData.hash == null || !Array.isArray(noteData.hash)) {
         return res.status(401).send({error: true, msg: 'Note data missing'})
     }
-
     existNotes.push({...noteData, "id": uuidv4()})
     saveNoteData(existNotes);
     res.send({success: true, msg: 'Note data added successfully'})
@@ -42,11 +41,11 @@ app.patch('/note/update/:id', (req, res) => {
     res.send({success: true, msg: 'Note data updated successfully'})
 })
 
-app.delete('/note/delete/:note', (req, res) => {
+app.delete('/note/delete/:id', (req, res) => {
 
-    const name = req.params.name
+    const id = req.params.id
     const existNotes = getNoteData()
-    const filterNote = existNotes.filter(note => note.name !== name)
+    const filterNote = existNotes.filter(note => note.id !== id)
 
     if (existNotes.length === filterNote.length) {
         return res.status(409).send({error: true, msg: 'name does not exist'})
