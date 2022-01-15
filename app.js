@@ -4,14 +4,19 @@ const fs = require('fs')
 const app = express()
 const cors = require('cors')
 
-const PORT = process.env.PORT || 3000
-
 const corsOptions = {
-    origin: 'https://notes-fedos.herokuapp.com',
-    optionsSuccessStatus: 200
+    origin: 'http://localhost:3001',
+    credentials: true,
+    optionSuccessStatus: 200
 }
 
+app.use(cors(corsOptions))
 app.use(express.json())
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+});
 
 app.post('/note/add', cors(corsOptions), (req, res) => {
 
@@ -26,9 +31,9 @@ app.post('/note/add', cors(corsOptions), (req, res) => {
     res.send({success: true, msg: 'Note data added successfully'})
 })
 
-app.get('/note/list', cors(corsOptions), (req, res) => {
+app.get('/note/list', (req, res) => {
     const notes = getNoteData()
-    res.send(notes)
+    res.send({'notes': notes})
 })
 
 app.patch('/note/update/:id', cors(corsOptions), (req, res) => {
@@ -73,6 +78,10 @@ const getNoteData = () => {
     return JSON.parse(jsonData)
 }
 
-app.listen(PORT, () => {
-    console.log('Server runs on port 3000')
-})
+if (!module.parent) {
+    const port = process.env.PORT || 3001;
+
+    app.listen(port, () => {
+        console.log("Express server listening on port " + port + ".");
+    });
+}
