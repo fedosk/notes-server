@@ -5,7 +5,7 @@ const app = express()
 const cors = require('cors')
 
 const corsOptions = {
-    origin: 'http://localhost:3001',
+    origin: 'http://localhost:3000',
     credentials: true,
     optionSuccessStatus: 200
 }
@@ -33,7 +33,7 @@ app.post('/note/add', cors(corsOptions), (req, res) => {
 
 app.get('/note/list', (req, res) => {
     const notes = getNoteData()
-    res.send({'notes': notes})
+    res.send(notes)
 })
 
 app.patch('/note/update/:id', cors(corsOptions), (req, res) => {
