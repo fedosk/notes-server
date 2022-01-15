@@ -3,6 +3,8 @@ const { v4: uuidv4 } = require('uuid');
 const fs = require('fs')
 const app = express()
 
+const PORT = process.env.PORT || 3000
+
 app.use(express.json())
 
 app.post('/note/add', (req, res) => {
@@ -65,6 +67,6 @@ const getNoteData = () => {
     return JSON.parse(jsonData)
 }
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
     console.log('Server runs on port 3000')
 })
