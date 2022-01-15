@@ -1,14 +1,14 @@
 const express = require('express')
-const { v4: uuidv4 } = require('uuid');
+const {v4: uuidv4} = require('uuid');
 const fs = require('fs')
 const app = express()
 const cors = require('cors')
+
 const PORT = process.env.PORT || 3000
 
-
-var corsOptions = {
+const corsOptions = {
     origin: 'https://notes-fedos.herokuapp.com',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+    optionsSuccessStatus: 200
 }
 
 app.use(express.json())
@@ -26,12 +26,12 @@ app.post('/note/add', cors(corsOptions), (req, res) => {
     res.send({success: true, msg: 'Note data added successfully'})
 })
 
-app.get('/note/list', (req, res) => {
+app.get('/note/list', cors(corsOptions), (req, res) => {
     const notes = getNoteData()
     res.send(notes)
 })
 
-app.patch('/note/update/:id', (req, res) => {
+app.patch('/note/update/:id', cors(corsOptions), (req, res) => {
 
     const id = req.params.id
     const noteData = req.body
@@ -49,7 +49,7 @@ app.patch('/note/update/:id', (req, res) => {
     res.send({success: true, msg: 'Note data updated successfully'})
 })
 
-app.delete('/note/delete/:id', (req, res) => {
+app.delete('/note/delete/:id', cors(corsOptions), (req, res) => {
 
     const id = req.params.id
     const existNotes = getNoteData()
