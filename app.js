@@ -4,21 +4,10 @@ const fs = require('fs')
 const app = express()
 const cors = require('cors')
 
-const corsOptions = {
-    origin: 'http://localhost:3000',
-    credentials: true,
-    optionSuccessStatus: 200
-}
-
-app.use(cors(corsOptions))
+app.use(cors())
 app.use(express.json())
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    next();
-});
-
-app.post('/note/add', cors(corsOptions), (req, res) => {
+app.post('/note/add', (req, res) => {
 
     const existNotes = getNoteData()
     const noteData = req.body
@@ -26,9 +15,10 @@ app.post('/note/add', cors(corsOptions), (req, res) => {
     if (noteData.name == null || noteData.text == null || noteData.hash == null || !Array.isArray(noteData.hash)) {
         return res.status(401).send({error: true, msg: 'Note data missing'})
     }
-    existNotes.push({...noteData, "id": uuidv4()})
+    newNote = {...noteData, "id": uuidv4()}
+    existNotes.push(newNote)
     saveNoteData(existNotes);
-    res.send({success: true, msg: 'Note data added successfully'})
+    res.send(newNote)
 })
 
 app.get('/note/list', (req, res) => {
@@ -36,10 +26,11 @@ app.get('/note/list', (req, res) => {
     res.send(notes)
 })
 
-app.patch('/note/update/:id', cors(corsOptions), (req, res) => {
+app.patch('/note/update/:id', cors(), (req, res) => {
 
     const id = req.params.id
     const noteData = req.body
+    const updatedNote = {...noteData, id}
     const existNotes = getNoteData()
     const findExist = existNotes.find(note => note.id === id)
 
@@ -48,13 +39,12 @@ app.patch('/note/update/:id', cors(corsOptions), (req, res) => {
     }
 
     const updateNote = existNotes.filter(note => note.id !== id)
-    updateNote.push(noteData)
+    updateNote.push({...noteData, id})
     saveNoteData(updateNote)
-
-    res.send({success: true, msg: 'Note data updated successfully'})
+    res.send(updatedNote)
 })
 
-app.delete('/note/delete/:id', cors(corsOptions), (req, res) => {
+app.delete('/note/delete/:id', cors(), (req, res) => {
 
     const id = req.params.id
     const existNotes = getNoteData()
@@ -65,7 +55,7 @@ app.delete('/note/delete/:id', cors(corsOptions), (req, res) => {
     }
 
     saveNoteData(filterNote)
-    res.send({success: true, msg: 'Note removed successfully'})
+    res.send(id)
 })
 
 const saveNoteData = (data) => {
